@@ -13,7 +13,7 @@ TFENVFILE=${WORKDIR}/tf_sub-${SUBJ}_ses-${SESS}_env.txt
 if [ -z "$( ls -A ${TFINDIR} )" ]; then
 
 	# create simplified data layout from input
-	python /opt/tf-wrapper/bin/tf-parsing.py \
+	python /opt/tf-wrapper/tf-parsing.py \
 		   --bids_dir $BIDSDIR --output_dir ${TFINDIR} \
 		   --participant_id $SUBJ --session_id $SESS
 
@@ -27,7 +27,7 @@ fi
 if [ -z ${TFINFILE} ]; then
 
 	# create environment variables in a file, because TF is that stupid
-	python /opt/tf-wrapper/bin/tf-shells.py \
+	python /opt/tf-wrapper/tf-shells.py \
 		   --bval /input/sub-${SUBJ}/bval \
 		   --bvec /input/sub-${SUBJ}/bvec \
 		   --outs $TFENVFILE
