@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # build the docker image w/ local Dockerfile
-docker build -t bcmcpher/dMRI-tractoflow .
+docker build -t bcmcpher/dmri-tractoflow .
 
 # add a version tag
-docker tag bcmcpher/dMRI-tractoflow bcmcpher/dMRI-tractoflow:1.0.0
+docker tag bcmcpher/dmri-tractoflow bcmcpher/dmri-tractoflow:1.0.0
 
 # push the image to dockerhub to pull for apptainer build
-docker push bcmcpher/dMRI-tractoflow:1.0.0
+docker push bcmcpher/dmri-tractoflow:1.0.0
 
 # build the apptainer version of the image
-apptainer build dMRI-tractoflow_1.0.0.sif docker://bcmcpher/dMRI-tractoflow:1.0.0
+apptainer build dmri-tractoflow_1.0.0.sif docker://bcmcpher/dmri-tractoflow:1.0.0
