@@ -9,6 +9,45 @@ TFINDIR=$5
 
 TFENVFILE=${WORKDIR}/tf_sub-${SUBJ}_ses-${SESS}_env.txt
 
+# add help message when no arguments are provided
+if [ "$#" -lt 5 ]; then
+	echo " -- Tractoflow Wrapper Script -- "
+	echo " Usage: "
+	echo "   $0 <subject_id> <session_id> <bids_dir> <work_dir> <tf_input_dir> "
+	echo ""
+	echo "  <subject_id>   - subject ID - for name in output path"
+	echo "	<session_id>   - session ID - for name in output path"
+	echo "	<bids_dir>     - BIDS dataset where subject_id / session_id are located"
+	echo "	<work_dir>     - path to Tractoflow working directory"
+	echo "	<tf_input_dir> - path to created Tractoflow input directory"
+	echo ""
+	exit 1
+fi
+
+#
+# check if inputs exist
+#
+
+if [ -z $SUBJ ]; then
+	echo " -- No subject ID provided -- "
+	exit 1
+fi
+
+if [ -z $SESS ]; then
+	echo " -- No session ID provided -- "
+	exit 1
+fi
+
+if [ ! -d $BIDSDIR ]; then
+	echo " -- BIDS directory does not exist -- "
+	exit 1
+fi
+
+if [ ! -d $WORKDIR ]; then
+	echo " -- Working directory does not exist -- "
+	exit 1
+fi
+
 # if the input directory is empty
 if [ -z "$( ls -A ${TFINDIR} )" ]; then
 
