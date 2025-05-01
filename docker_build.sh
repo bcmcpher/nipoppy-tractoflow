@@ -10,4 +10,4 @@ docker tag bcmcpher/dmri-tractoflow bcmcpher/dmri-tractoflow:1.0.0
 docker push bcmcpher/dmri-tractoflow:1.0.0
 
 # build the apptainer version of the image
-apptainer build dmri-tractoflow_1.0.0.sif docker://bcmcpher/dmri-tractoflow:1.0.0
+apptainer build tractoflow_2.4.2.sif docker://bcmcpher/dmri-tractoflow:1.0.0
