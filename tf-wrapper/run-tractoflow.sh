@@ -4,8 +4,9 @@ SUBJ=$1
 SESS=$2
 
 BIDSDIR=$3
-WORKDIR=$4
-TFINDIR=$5
+OUTSDIR=$4
+WORKDIR=$5
+TFINDIR=$6
 
 TFENVFILE=${WORKDIR}/tf_sub-${SUBJ}_ses-${SESS}_env.txt
 
@@ -16,10 +17,11 @@ if [ "$#" -lt 5 ]; then
 	echo "   $0 <subject_id> <session_id> <bids_dir> <work_dir> <tf_input_dir> "
 	echo ""
 	echo "  <subject_id>   - subject ID - for name in output path"
-	echo "	<session_id>   - session ID - for name in output path"
-	echo "	<bids_dir>     - BIDS dataset where subject_id / session_id are located"
-	echo "	<work_dir>     - path to Tractoflow working directory"
-	echo "	<tf_input_dir> - path to created Tractoflow input directory"
+	echo "  <session_id>   - session ID - for name in output path"
+	echo "  <bids_dir>     - BIDS dataset where subject_id / session_id are located"
+	echo "  <output>       - path to Tractoflow output directory"
+	echo "  <work_dir>     - path to Tractoflow working directory"
+	echo "  <tf_input_dir> - path to created Tractoflow input directory"
 	echo ""
 	exit 1
 fi
@@ -40,6 +42,11 @@ fi
 
 if [ ! -d $BIDSDIR ]; then
 	echo " -- BIDS directory does not exist -- "
+	exit 1
+fi
+
+if [ ! -d $OUTSDIR ]; then
+	echo " -- Output directory does not exist -- "
 	exit 1
 fi
 
@@ -65,7 +72,7 @@ fi
 # if the environment variables are not already determined
 if [ -z ${TFINFILE} ]; then
 
-	# create environment variables in a file, because TF is that stupid
+	# create environment variables in a file
 	python /opt/tf-wrapper/tf-shells.py \
 		   --bval /input/sub-${SUBJ}/bval \
 		   --bvec /input/sub-${SUBJ}/bvec \
@@ -80,7 +87,7 @@ fi
 # get the environment variables from the file
 source $TFENVFILE
 
-# just run the goddamn thing
+# run nextflow
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
 		  --input ${TFINDIR} \
 		  --output_dir /tractoflow_results \
@@ -100,3 +107,5 @@ source $TFENVFILE
 		  --processes_fodf 2 \
 		  --processes_registration 1 \
 		  -resume
+
+# add cleanup from previous pre-boutiques version...
