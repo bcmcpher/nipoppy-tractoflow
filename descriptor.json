@@ -27,7 +27,7 @@
 	  "description": "The preprocessed DWI .nii.gz file used to fit the DTI / fwDTI model.",
 	  "optional": false,
 	  "type": "String",
-	  "value-key": "[DWI_FILE]"
+	  "value-key": "[BIDS_DIR]"
 	},
 	{
 	  "id": "work_dir",
