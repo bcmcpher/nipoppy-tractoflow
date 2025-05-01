@@ -90,7 +90,7 @@ source $TFENVFILE
 # run nextflow
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
 		  --input ${TFINDIR} \
-		  --output_dir /tractoflow_results \
+		  --output_dir ${OUTSDIR} \
 		  -w ${WORKDIR} \
 		  --dti_shells "$TFBVAL" \
 		  --fodf_shells "$TFBVAL" \

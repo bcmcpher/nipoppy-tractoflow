@@ -2,7 +2,7 @@
 	"subject": "[[NIPOPPY_PARTICIPANT_ID]]",
 	"session": "[[NIPOPPY_BIDS_SESSION_ID]]",
 	"bids_dir": "[[NIPOPPY_DPATH_BIDS]]",
-	"output_dir": "[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]",
 	"work_dir": "[[NIPOPPY_DPATH_PIPELINE_WORK]]",
-	"tf_input": "[[NIPOPPY_DPATH_PIPELINE]]/input"
+	"output_dir": "[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]",
+	"tf_input_dir": "[[NIPOPPY_DPATH_PIPELINE]]/input"
 }
