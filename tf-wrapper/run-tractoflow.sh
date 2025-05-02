@@ -55,8 +55,8 @@ if [ ! -d $WORKDIR ]; then
 	exit 1
 fi
 
-# if the input directory is empty
-if [ -z "$( ls -A ${TFINDIR} )" ]; then
+# if the input directory is functionally empty
+if [ ! -f ${TFINDIR}/dwi.nii.gz ]; then
 
 	# create simplified data layout from input
 	python /opt/tf-wrapper/tf-parsing.py \
@@ -74,8 +74,8 @@ if [ -z ${TFINFILE} ]; then
 
 	# create environment variables in a file
 	python /opt/tf-wrapper/tf-shells.py \
-		   --bval /input/sub-${SUBJ}/bval \
-		   --bvec /input/sub-${SUBJ}/bvec \
+		   --bval ${TFINDIR}/bval \
+		   --bvec ${TFINDIR}/bvec \
 		   --outs $TFENVFILE
 
 else

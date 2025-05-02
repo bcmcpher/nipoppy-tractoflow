@@ -67,12 +67,12 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
     # preallocate candidate anatomical files
     canat = []
 
-    
+
     #
     # anat parsing
     #
 
-    
+
     print("Parsing Anatomical Files...")
     for idx, anat in enumerate(anat_files):
 
@@ -140,8 +140,8 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
     #
     # dmri parsing
     #
-    
-    
+
+
     # preallocate candidate dmri inputs
     cdmri = []
     cbv = np.empty(len(dmri_files))
@@ -200,7 +200,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
 
     if ucpe.size == 0:
         raise ValueError("No diffusion files found. Nothing to process.")
-    
+
     # sanity check - maybe redundant
     if len(ucpe) > 2:
         raise ValueError("More than 2 phase encodings found - nothing can be done.")
@@ -222,85 +222,85 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         if x == 1:
             print(f"File {idx+1}: {dmri_files[idx].filename}")
             dmrifs.append(dmri_files[idx])
-            
+
     # if there are more than 2, merge by phase encoding directions
     if len(dmrifs) >= 2:
-    
+
         print("Multiple files found: attempt to merge files by phase encoding direction.")
         print("= "*25)
-    
+
         # move files into 2 pe lists
         pe1, pe2 = [], []
         for idx, x in enumerate(dmri_files):
             (pe1, pe2)[cpe[idx] in ucpe[0]].append(x)
-        
+
         # for each file in pe1 list
         pe1dati = []
         pe1data = []
         pe1date = []
         for x in pe1:
-    
+
             t1dwif = x.get_image()
             t1dwid = t1dwif.get_fdata()
             pe1affine = t1dwif.affine
             pe1eadout = x.get_metadata()["TotalReadoutTime"]
-            print(f" -- Image file: {x.filename}") 
+            print(f" -- Image file: {x.filename}")
             print(f" -- Image shape: {t1dwid.shape[:3]}")
             print(" -- # of volumes / bvals / bvecs:")
-    
+
             # load bval / bvec data
             t1bvals = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bval')).joinpath())
             t1bvecs = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bvec')).joinpath())
             print(f" -- {t1dwid.shape[-1]} / {t1bvals.shape[-1]} / {t1bvecs.shape[-1]}")
             print("- " * 25)
-            
+
             # merge data
             pe1dati.append(t1dwid)
             pe1data.append(t1bvals)
             pe1date.append(t1bvecs)
-    
+
             # check dims and merge: .nii.gz, bval, bvec
             pe1img = np.concatenate(pe1dati, axis=-1)
             pe1bva = np.concatenate(pe1data, axis=-1)
             pe1bve = np.concatenate(pe1date, axis=-1)
 
             print(f"pe1img shape: {pe1img.shape}")
-            
+
             # # deal w/ an rpe being non-existant
             # if not pe1img:
             #     pe1img = None  # np.zeros([116, 116, 72, 1])
             #     pe1bva = None  # np.zeros([1,0])
             #     pe1bve = None  # np.zeros([3,1])
-            
+
         # print(f"PE1 {ucpe[0]} Merged Shapes: img: {pe1img.shape} / bval: {pe1bva.shape} / bvec: {pe1bve.shape}")
         print(f"PE1 {ucpe[0]} Merged Files")
         print("= " * 25)
-        
+
         # for each file in pe2 list
         pe2dati = []
         pe2data = []
         pe2date = []
         for x in pe2:
-    
+
             t2dwif = x.get_image()
             t2dwid = t2dwif.get_fdata()
             pe2affine = t2dwif.affine
             pe2readout = x.get_metadata()["TotalReadoutTime"]
-            print(f" -- Image file: {x.filename}") 
+            print(f" -- Image file: {x.filename}")
             print(f" -- Image shape: {t2dwid.shape[:3]}")
             print(" -- # of volumes / bvals / bvecs:")
-    
+
             # load bval / bvec data
             t2bvals = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bval')).joinpath())
             t2bvecs = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bvec')).joinpath())
             print(f" -- {t2dwid.shape[-1]} / {t2bvals.shape[-1]} / {t2bvecs.shape[-1]}")
             print("- " * 25)
-            
+
             # merge data
             pe2dati.append(t2dwid)
             pe2data.append(t2bvals)
             pe2date.append(t2bvecs)
-    
+
             # check dims and merge: .nii.gz, bval, bvec
             pe2img = np.concatenate(pe2dati, axis=-1)
             pe2bva = np.concatenate(pe2data, axis=-1)
@@ -313,7 +313,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             #     pe2img = None  # np.zeros([116, 116, 72, 1])
             #     pe2bva = None  # np.zeros([1,0])
             #     pe2bve = None  # np.zeros([3,1])
-    
+
         # print(f"PE2 {ucpe[1]} Merged Shapes: img: {pe2img.shape} / bval: {pe2bva.shape} / bvec: {pe2bve.shape}")
         print(f"PE2 {ucpe[0]} Merged Files")
         print("= " * 25)
@@ -336,7 +336,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
 
 
         # print(f"xxx: {xxx} | yyy: {yyy}")
-            
+
         # determine what sequence will be the weighted / revb0
         if  xxx > yyy:
             #print(f" -- Selected PE1 ({ucpe[0]}) as FPE.")
@@ -353,27 +353,27 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             except:
                 revb_out = None
                 revb_aff = None
-            
+
         else:
             #print(f" -- Selected PE2 ({ucpe[1]}) as FPE.")
             #print(f" -- -- RPE PE1 ({ucpe[0]}).")
-            
+
             dwis_out = pe2img
             dwis_aff = pe2affine
             bval_out = pe2bva
             bvec_out = pe2bve
             mf_readout = pe2readout
-                        
+
             try:
                 revb_out = np.mean(pe1img, axis=-1)
-                revb_aff = pe1affine                
+                revb_aff = pe1affine
             except:
                 revb_out = None
                 revb_aff = None
 
         # write the dwi / revb0 to disk
         print("Writing output files...")
-        
+
         dwi_out = f'dwi.nii.gz'
         dwi_data = nib.nifti1.Nifti1Image(dwis_out, dwis_aff)
         nib.save(dwi_data, Path(outdir, dwi_out).joinpath())
@@ -389,45 +389,45 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         else:
             print(f" -- RPE Image isn't really there - don't write it.")
     else:
-        
+
         print("Just copy single dwi file to output folder.")
         shutil.copy(dmrifs[0], Path(outdir, 'dwi.nii.gz'))
         shutil.copy(Path(bids_dir, "sub-" + participant_id, 'ses-' + session_id, 'dwi', dmrifs[0].filename.replace('.nii.gz', '.bvec')).joinpath(), Path(outdir, "bvec"))
         shutil.copy(Path(bids_dir, "sub-" + participant_id, 'ses-' + session_id, 'dwi', dmrifs[0].filename.replace('.nii.gz', '.bval')).joinpath(), Path(outdir, "bval"))
         rpe_out = None
-        
+
     ## return the paths to the input files to copy
     # return(dmrifile, bvalfile, bvecfile, anatfile, rpe_file, phase, readout)
     return("Parsing complete.")
 
 
 if __name__ == '__main__':
-    ## argparse
+    # argparse
     HELPTEXT = """
-    Script to run TractoFlow
+    Script to run parse bids dMRI data into TractoFlow generic input
     """
 
-    ## parse inputs
+    # parse inputs
     parser = argparse.ArgumentParser(description=HELPTEXT)
     parser.add_argument('--bids_dir', type=str, help='BIDS directory', required=True)
+    parser.add_argument('--output_dir', type=str, default=None, help='specify custom output dir (if None --> <DATASET_ROOT>/derivatives)')
     parser.add_argument('--participant_id', type=str, help='participant id', required=True)
     parser.add_argument('--session_id', type=str, help='session id for the participant', required=True)
-    parser.add_argument('--output_dir', type=str, default=None, help='specify custom output dir (if None --> <DATASET_ROOT>/derivatives)')
-    parser.add_argument('--use_bids_filter', action='store_true', help='use bids filter or not')
-    parser.add_argument('--dti_shells', type=str, default=None, help='shell value(s) on which a tensor will be fit', required=False)
-    parser.add_argument('--fodf_shells', type=str, default=None, help='shell value(s) on which the CSD will be fit', required=False)
-    parser.add_argument('--sh_order', type=str, default=None, help='The order of the CSD function to fit', required=False)
+#    parser.add_argument('--use_bids_filter', action='store_true', help='use bids filter or not')
+#    parser.add_argument('--dti_shells', type=str, default=None, help='shell value(s) on which a tensor will be fit', required=False)
+#    parser.add_argument('--fodf_shells', type=str, default=None, help='shell value(s) on which the CSD will be fit', required=False)
+#    parser.add_argument('--sh_order', type=str, default=None, help='The order of the CSD function to fit', required=False)
 
-    ## extract arguments
+    # extract arguments
     args = parser.parse_args()
     bids_dir = args.bids_dir
+    output_dir = args.output_dir # Needed on BIC (QPN) due to weird permissions issues with mkdir
     participant_id = args.participant_id
     session_id = args.session_id
-    output_dir = args.output_dir # Needed on BIC (QPN) due to weird permissions issues with mkdir
-    dti_shells=args.dti_shells
-    fodf_shells=args.fodf_shells
-    sh_order=args.sh_order
-    use_bids_filter = args.use_bids_filter
+#    dti_shells=args.dti_shells
+#    fodf_shells=args.fodf_shells
+#    sh_order=args.sh_order
+#    use_bids_filter = args.use_bids_filter
 
     # test parsing
     parse_data(bids_dir, participant_id, session_id, output_dir, use_bids_filter=True)
