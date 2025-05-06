@@ -8,9 +8,9 @@ WORKDIR=$4
 OUTSDIR=$5
 TFINDIR=$6
 
-TFINRUN=${TFINDIR}/sub-${SUBJ}_ses-${SESS}/input
+TFINRUN=${TFINDIR}/input/sub-${SUBJ}_ses-${SESS}/input
 TFSUB=${TFINRUN}/${SUBJ}
-TFENVFILE=${TFSUB}/tf_sub-${SUBJ}_ses-${SESS}_env.txt
+TFENVFILE=${TFINRUN}/tf_sub-${SUBJ}_ses-${SESS}_env.txt
 
 # add help message when no arguments are provided
 if [ "$#" -lt 5 ]; then
@@ -94,7 +94,7 @@ source ${TFENVFILE}
 
 # run nextflow
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
-		  --input ${TFINDIR} \
+		  --input ${TFINRUN} \
 		  --output_dir ${OUTSDIR} \
 		  -w ${WORKDIR} \
 		  --dti_shells "${TFBVAL}" \
