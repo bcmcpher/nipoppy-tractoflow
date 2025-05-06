@@ -4,5 +4,5 @@
 	"bids_dir": "[[NIPOPPY_DPATH_BIDS]]",
 	"work_dir": "[[NIPOPPY_DPATH_PIPELINE_WORK]]",
 	"output_dir": "[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]",
-	"tf_input_dir": "[[NIPOPPY_DPATH_PIPELINE]]/input/[[NIPOPPY_BIDS_PARTICIPANT_ID]]_[[NIPOPPY_BIDS_SESSION_ID]]"
+	"tf_input_dir": "[[NIPOPPY_DPATH_PIPELINE]]
 }

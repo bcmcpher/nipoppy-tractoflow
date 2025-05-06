@@ -59,11 +59,11 @@ fi
 if [ ! -d ${TFINDIR} ]; then
 
 	# create the input directory
-	mkdir -p ${TFINDIR}
+	mkdir -p ${TFINDIR}/input/sub-${SUJB}_ses-${SESS}
 
 	# create simplified data layout from input
 	python /opt/tf-wrapper/tf-parsing.py \
-		   --bids_dir ${BIDSDIR} --output_dir ${TFINDIR} \
+		   --bids_dir ${BIDSDIR} --output_dir ${TFINDIR}/input/sub-${SUBJ}_ses-${SESS} \
 		   --participant_id ${SUBJ} --session_id ${SESS}
 
 else
@@ -92,7 +92,7 @@ source ${TFENVFILE}
 
 # run nextflow
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
-		  --input ${TFINDIR} \
+		  --input ${TFINDIR}/input \
 		  --output_dir ${OUTSDIR} \
 		  -w ${WORKDIR} \
 		  --dti_shells "${TFBVAL}" \
