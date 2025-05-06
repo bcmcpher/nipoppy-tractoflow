@@ -4,11 +4,13 @@ SUBJ=$1
 SESS=$2
 
 BIDSDIR=$3
-OUTSDIR=$4
-WORKDIR=$5
+WORKDIR=$4
+OUTSDIR=$5
 TFINDIR=$6
 
-TFENVFILE=${WORKDIR}/tf_sub-${SUBJ}_ses-${SESS}_env.txt
+TFINRUN=${TFINDIR}/sub-${SUBJ}_ses-${SESS}/input
+TFSUB=${TFINRUN}/${SUBJ}
+TFENVFILE=${TFSUB}/tf_sub-${SUBJ}_ses-${SESS}_env.txt
 
 # add help message when no arguments are provided
 if [ "$#" -lt 5 ]; then
@@ -19,8 +21,8 @@ if [ "$#" -lt 5 ]; then
 	echo "  <subject_id>   - subject ID - for name in output path"
 	echo "  <session_id>   - session ID - for name in output path"
 	echo "  <bids_dir>     - BIDS dataset where subject_id / session_id are located"
-	echo "  <output>       - path to Tractoflow output directory"
 	echo "  <work_dir>     - path to Tractoflow working directory"
+	echo "  <output>       - path to Tractoflow output directory"
 	echo "  <tf_input_dir> - path to created Tractoflow input directory"
 	echo ""
 	exit 1
@@ -56,14 +58,14 @@ if [ ! -d $WORKDIR ]; then
 fi
 
 # if the input directory is functionally empty
-if [ ! -d ${TFINDIR} ]; then
+if [ ! -d ${TFINRUN} ]; then
 
 	# create the input directory
-	mkdir -p ${TFINDIR}/input/sub-${SUJB}_ses-${SESS}
+	mkdir -p ${TFSUB}
 
 	# create simplified data layout from input
 	python /opt/tf-wrapper/tf-parsing.py \
-		   --bids_dir ${BIDSDIR} --output_dir ${TFINDIR}/input/sub-${SUBJ}_ses-${SESS} \
+		   --bids_dir ${BIDSDIR} --output_dir ${TFSUB} \
 		   --participant_id ${SUBJ} --session_id ${SESS}
 
 else
@@ -77,8 +79,8 @@ if [ -z ${TFINFILE} ]; then
 
 	# create environment variables in a file
 	python /opt/tf-wrapper/tf-shells.py \
-		   --bval ${TFINDIR}/bval \
-		   --bvec ${TFINDIR}/bvec \
+		   --bval ${TFSUB}/bval \
+		   --bvec ${TFSUB}/bvec \
 		   --outs ${TFENVFILE}
 
 else
@@ -92,7 +94,7 @@ source ${TFENVFILE}
 
 # run nextflow
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
-		  --input ${TFINDIR}/input \
+		  --input ${TFINDIR} \
 		  --output_dir ${OUTSDIR} \
 		  -w ${WORKDIR} \
 		  --dti_shells "${TFBVAL}" \
