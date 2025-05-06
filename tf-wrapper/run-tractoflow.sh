@@ -56,16 +56,19 @@ if [ ! -d $WORKDIR ]; then
 fi
 
 # if the input directory is functionally empty
-if [ ! -f ${TFINDIR}/dwi.nii.gz ]; then
+if [ ! -d ${TFINDIR} ]; then
+
+	# create the input directory
+	mkdir -p ${TFINDIR}
 
 	# create simplified data layout from input
 	python /opt/tf-wrapper/tf-parsing.py \
-		   --bids_dir $BIDSDIR --output_dir ${TFINDIR} \
-		   --participant_id $SUBJ --session_id $SESS
+		   --bids_dir ${BIDSDIR} --output_dir ${TFINDIR} \
+		   --participant_id ${SUBJ} --session_id ${SESS}
 
 else
 
-	echo " -- TF input already exists -- "
+	echo " -- TF input directory already exists -- "
 
 fi
 
@@ -76,7 +79,7 @@ if [ -z ${TFINFILE} ]; then
 	python /opt/tf-wrapper/tf-shells.py \
 		   --bval ${TFINDIR}/bval \
 		   --bvec ${TFINDIR}/bvec \
-		   --outs $TFENVFILE
+		   --outs ${TFENVFILE}
 
 else
 
@@ -85,15 +88,15 @@ else
 fi
 
 # get the environment variables from the file
-source $TFENVFILE
+source ${TFENVFILE}
 
 # run nextflow
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
 		  --input ${TFINDIR} \
 		  --output_dir ${OUTSDIR} \
 		  -w ${WORKDIR} \
-		  --dti_shells "$TFBVAL" \
-		  --fodf_shells "$TFBVAL" \
+		  --dti_shells "${TFBVAL}" \
+		  --fodf_shells "${TFBVAL}" \
 		  --step 0.5 \
 		  --mean_frf false \
 		  --set_frf true \

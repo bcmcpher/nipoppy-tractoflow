@@ -126,7 +126,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
     # check how many candidates there are
     if len(canat) > 1:
         print('Still have to pick one...')
-        npart = [ len(x.get_entities()) for x in canat ]
+        npart = [len(x.get_entities()) for x in canat]
         oanat = canat[np.argmin(npart)]
     else:
         oanat = canat[0]
