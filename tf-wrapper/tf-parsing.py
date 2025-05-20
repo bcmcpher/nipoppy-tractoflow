@@ -12,7 +12,7 @@ import nibabel as nib
 from bids import BIDSLayout, BIDSLayoutIndexer
 
 def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=True):
-    """ Parse and verify the input files to build TractoFlow's useless simplified input to avoid their incompetent file handling.
+    """ Parse and verify the input files to build TractoFlow's simplified input.
     """
 
     # because why parse subject ID the same as bids ID?
@@ -35,7 +35,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
     layout = BIDSLayout(bids_dir, indexer=bidx)
 
     # load the bids filter if it's called
-    bidf = {}  ## make it empty by default
+    bidf = {}  # make it empty by default
     if use_bids_filter:
 
         # bad practive, but I don't have time...

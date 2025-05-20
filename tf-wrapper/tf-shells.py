@@ -3,12 +3,13 @@ import os
 
 import numpy as np
 
+
 def checkData(bvalfile, bvecfile):
-    
+
     # load the bval / bvec data
     bval = np.loadtxt(bvalfile)
     bvec = np.loadtxt(bvecfile)
-    
+
     # pull the number of shells
     bunq = np.unique(bval)
 
@@ -28,11 +29,11 @@ def checkData(bvalfile, bvecfile):
         sh_order = str(dlmax)
     else:
         sh_order = "8"
-        
+
     print(f'The largest supported lmax using the whole dMRI sequence is: {dlmax}')
     print(f' -- Fitting lmax: {sh_order}')
-    
-    # export necessary values as environment variables 
+
+    # export necessary values as environment variables
     os.environ["TFBVAL"] = sh_use
     os.environ["TFORDR"] = sh_order
 
@@ -48,8 +49,8 @@ if __name__ == '__main__':
 
     # parse inputs
     parser = argparse.ArgumentParser(description=HELPTEXT)
-    parser.add_argument('--bval', type=str, help='participant id', required=True)
-    parser.add_argument('--bvec', type=str, help='session id for the participant', required=True)
+    parser.add_argument('--bval', type=str, help='bval data to evaluate', required=True)
+    parser.add_argument('--bvec', type=str, help='bvec data to evaluate', required=True)
     parser.add_argument('--outs', type=str, help='output file to source environment values', required=True)
 
     # extract arguments
@@ -57,7 +58,7 @@ if __name__ == '__main__':
     bval = args.bval
     bvec = args.bvec
     out_file = args.outs
-    
+
     # just run the fxn
     tfbval, tfshod = checkData(bval, bvec)
 
@@ -69,5 +70,3 @@ if __name__ == '__main__':
         env_file.write(f'export TFBVAL="{tfbval}"\n')
         env_file.write(f'export TFSHOD="{tfshod}"\n')
         env_file.close()
-        
-        

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# parse inputs
 SUBJ=$1
 SESS=$2
 
@@ -8,12 +9,13 @@ WORKDIR=$4
 OUTSDIR=$5
 TFINDIR=$6
 
-TFINRUN=${TFINDIR}/input/sub-${SUBJ}_ses-${SESS}/input
-TFSUB=${TFINRUN}/${SUBJ}
-TFENVFILE=${TFINRUN}/tf_sub-${SUBJ}_ses-${SESS}_env.txt
+# build paths to input files
+INPUTDIR=${TFINDIR}/sub-${SUBJ}_ses-${SESS}/input
+TFINRUN=${INPUTDIR}/${SUBJ}
+TFENVFILE=${TFINDIR}/sub-${SUBJ}_ses-${SESS}_env.txt
 
 # add help message when no arguments are provided
-if [ "$#" -lt 5 ]; then
+if [ "$#" -lt 6 ]; then
 	echo " -- Tractoflow Wrapper Script -- "
 	echo " Usage: "
 	echo "   $0 <subject_id> <session_id> <bids_dir> <work_dir> <tf_input_dir> "
@@ -61,11 +63,11 @@ fi
 if [ ! -d ${TFINRUN} ]; then
 
 	# create the input directory
-	mkdir -p ${TFSUB}
+	mkdir -p ${TFINRUN}
 
 	# create simplified data layout from input
 	python /opt/tf-wrapper/tf-parsing.py \
-		   --bids_dir ${BIDSDIR} --output_dir ${TFSUB} \
+		   --bids_dir ${BIDSDIR} --output_dir ${TFINRUN} \
 		   --participant_id ${SUBJ} --session_id ${SESS}
 
 else
@@ -75,7 +77,7 @@ else
 fi
 
 # if the environment variables are not already determined
-if [ -z ${TFINFILE} ]; then
+if [ -z ${TFENVFILE} ]; then
 
 	# create environment variables in a file
 	python /opt/tf-wrapper/tf-shells.py \
@@ -94,7 +96,7 @@ source ${TFENVFILE}
 
 # run nextflow
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
-		  --input ${TFINRUN} \
+		  --input ${INPUTDIR} \
 		  --output_dir ${OUTSDIR} \
 		  -w ${WORKDIR} \
 		  --dti_shells "${TFBVAL}" \
