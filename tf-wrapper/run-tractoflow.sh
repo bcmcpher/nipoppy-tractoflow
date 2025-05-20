@@ -81,8 +81,8 @@ if [ -z ${TFENVFILE} ]; then
 
 	# create environment variables in a file
 	python /opt/tf-wrapper/tf-shells.py \
-		   --bval ${TFSUB}/bval \
-		   --bvec ${TFSUB}/bvec \
+		   --bval ${TFINRUN}/bval \
+		   --bvec ${TFINRUN}/bvec \
 		   --outs ${TFENVFILE}
 
 else
