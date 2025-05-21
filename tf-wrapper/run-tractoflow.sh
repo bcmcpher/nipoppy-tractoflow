@@ -10,6 +10,7 @@ OUTSDIR=$5
 TFINDIR=$6
 
 # build paths to input files
+TFRUNDIR=${TFINDIR}/sub-${SUBJ}_ses-${SESS}
 INPUTDIR=${TFINDIR}/sub-${SUBJ}_ses-${SESS}/input
 TFINRUN=${INPUTDIR}/${SUBJ}
 TFENVFILE=${TFINDIR}/sub-${SUBJ}_ses-${SESS}_env.txt
@@ -94,6 +95,9 @@ fi
 # get the environment variables from the file
 source ${TFENVFILE}
 
+# change into input directory to manage nextflow logs
+cd ${TFRUNDIR}
+
 # run nextflow
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
 		  --input ${INPUTDIR} \
@@ -115,4 +119,11 @@ source ${TFENVFILE}
 		  --processes_registration 1 \
 		  -resume
 
-# add cleanup from previous pre-boutiques version...
+# find and convert all symlinks to absolute paths
+find ${OUTSDIR}/${SUBJ} -type l -execdir bash -c 'cp --remove-destination "$(readlink "${0}")" "${0}"' {} \;
+
+# remove working directories if key output exists
+if [ -f ${RESULTS}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
+	rm -rf ${WORKDIR}
+	# rm -rf ${INPUTDIR}  # ?
+fi
