@@ -14,6 +14,7 @@ TFRUNDIR=${TFINDIR}/sub-${SUBJ}_ses-${SESS}
 INPUTDIR=${TFINDIR}/sub-${SUBJ}_ses-${SESS}/input
 TFINRUN=${INPUTDIR}/${SUBJ}
 TFENVFILE=${TFINDIR}/sub-${SUBJ}_ses-${SESS}_env.txt
+TFWORKDR=${WORKDIR}/sub-${SUBJ}_ses-${SESS}
 
 # add help message when no arguments are provided
 if [ "$#" -lt 6 ]; then
@@ -92,6 +93,13 @@ else
 
 fi
 
+# deal with working directory being present or not
+if [ -d ${TFWORKDR} ]; then
+	echo " -- Working directory already exists. Process should resume."
+else
+	mkdir -p ${TFWORKDR}
+fi
+
 # get the environment variables from the file
 source ${TFENVFILE}
 
@@ -124,6 +132,6 @@ find ${OUTSDIR}/${SUBJ} -type l -execdir bash -c 'cp --remove-destination "$(rea
 
 # remove working directories if key output exists
 if [ -f ${RESULTS}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
-	rm -rf ${WORKDIR}
-	# rm -rf ${INPUTDIR}  # ?
+	rm -rf ${TFWORKDR}
+	rm -rf ${TFRUNDIR}  # ?
 fi
