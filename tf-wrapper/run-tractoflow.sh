@@ -14,7 +14,7 @@ TFRUNDIR=${TFINDIR}/sub-${SUBJ}_ses-${SESS}
 INPUTDIR=${TFINDIR}/sub-${SUBJ}_ses-${SESS}/input
 TFINRUN=${INPUTDIR}/${SUBJ}
 TFENVFILE=${TFINDIR}/sub-${SUBJ}_ses-${SESS}_env.txt
-TFWORKDR=${WORKDIR}/sub-${SUBJ}_ses-${SESS}
+TFWORKDIR=${WORKDIR}/sub-${SUBJ}_ses-${SESS}
 
 # add help message when no arguments are provided
 if [ "$#" -lt 6 ]; then
@@ -94,10 +94,10 @@ else
 fi
 
 # deal with working directory being present or not
-if [ -d ${TFWORKDR} ]; then
+if [ -d ${TFWORKDIR} ]; then
 	echo " -- Working directory already exists. Process should resume."
 else
-	mkdir -p ${TFWORKDR}
+	mkdir -p ${TFWORKDIR}
 fi
 
 # get the environment variables from the file
@@ -111,7 +111,8 @@ cd ${TFRUNDIR}
 		  --input ${INPUTDIR} \
 		  --output_dir ${OUTSDIR} \
 		  -w ${TFWORKDIR} \
-		  --run-gibbs-correction \
+		  --run-gibbs-correction true \
+		  --eddy_cmd eddy_openmp \
 		  --dti_shells "${TFBVAL}" \
 		  --fodf_shells "${TFBVAL}" \
 		  --set_frf true \
@@ -119,7 +120,7 @@ cd ${TFRUNDIR}
 		  --step 0.5 \
 		  --save_seeds false \
 		  -profile fully_reproducible \
-		  --processes 4 \
+		  --processes 2 \
 		  -resume
 
 # find and convert all symlinks to absolute paths
@@ -127,6 +128,6 @@ find ${OUTSDIR}/${SUBJ} -type l -execdir bash -c 'cp --remove-destination "$(rea
 
 # remove working directories if key output exists
 if [ -f ${RESULTS}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
-	rm -rf ${TFWORKDR}
+	rm -rf ${TFWORKDIR}
 	rm -rf ${TFRUNDIR}  # ?
 fi
