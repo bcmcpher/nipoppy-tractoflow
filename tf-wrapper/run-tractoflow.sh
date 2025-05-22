@@ -110,21 +110,16 @@ cd ${TFRUNDIR}
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
 		  --input ${INPUTDIR} \
 		  --output_dir ${OUTSDIR} \
-		  -w ${WORKDIR} \
+		  -w ${TFWORKDIR} \
+		  --run-gibbs-correction \
 		  --dti_shells "${TFBVAL}" \
 		  --fodf_shells "${TFBVAL}" \
-		  --step 0.5 \
-		  --mean_frf false \
 		  --set_frf true \
+		  --mean_frf false \
+		  --step 0.5 \
 		  --save_seeds false \
 		  -profile fully_reproducible \
 		  --processes 4 \
-		  --processes_brain_extraction_t1 1 \
-		  --processes_denoise_dwi 2 \
-		  --processes_denoise_t1 2 \
-		  --processes_eddy 1 \
-		  --processes_fodf 2 \
-		  --processes_registration 1 \
 		  -resume
 
 # find and convert all symlinks to absolute paths
