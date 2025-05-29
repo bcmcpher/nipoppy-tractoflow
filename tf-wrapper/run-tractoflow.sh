@@ -120,7 +120,7 @@ cd ${TFRUNDIR}
 		  --step 0.5 \
 		  --save_seeds false \
 		  -profile fully_reproducible \
-		  --processes 2 \
+		  --processes 4 \
 		  -resume
 
 # find and convert all symlinks to absolute paths
