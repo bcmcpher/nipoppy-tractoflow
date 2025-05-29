@@ -107,12 +107,12 @@ source ${TFENVFILE}
 cd ${TFRUNDIR}
 
 # run nextflow
+{  # try
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
 		  --input ${INPUTDIR} \
 		  --output_dir ${OUTSDIR} \
 		  -w ${TFWORKDIR} \
 		  --run-gibbs-correction true \
-		  --eddy_cmd eddy_openmp \
 		  --dti_shells "${TFBVAL}" \
 		  --fodf_shells "${TFBVAL}" \
 		  --set_frf true \
@@ -122,9 +122,15 @@ cd ${TFRUNDIR}
 		  -profile fully_reproducible \
 		  --processes 4 \
 		  -resume
+} || {  # catch
+	echo "Nextflow run failed."
+	exit 1
+}
 
 # find and convert all symlinks to absolute paths
-find ${OUTSDIR}/${SUBJ} -type l -execdir bash -c 'cp --remove-destination "$(readlink "${0}")" "${0}"' {} \;
+if [ -f ${OUTSDIR}/${SUBJ}/PTF_Tracking/sub-${SUBJ}__pft_tracking_prob_wm_seed_0.trk ]; then
+	find ${OUTSDIR}/${SUBJ} -type l -execdir bash -c 'cp --remove-destination "$(readlink "${0}")" "${0}"' {} \;
+fi
 
 # remove working directories if key output exists
 if [ -f ${RESULTS}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
