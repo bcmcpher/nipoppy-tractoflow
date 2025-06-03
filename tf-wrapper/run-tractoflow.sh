@@ -85,7 +85,7 @@ if [ -z ${TFENVFILE} ]; then
 	python /opt/tf-wrapper/tf-shells.py \
 		   --bval ${TFINRUN}/bval \
 		   --bvec ${TFINRUN}/bvec \
-		   --outs ${TFENVFILE}
+		   --outs ${TFENVFILE}  # this isn't getting made...?
 
 else
 
@@ -105,6 +105,8 @@ source ${TFENVFILE}
 
 # change into input directory to manage nextflow logs
 cd ${TFRUNDIR}
+
+echo ${TFBVAL}
 
 # run nextflow
 {  # try
@@ -132,8 +134,8 @@ if [ -f ${OUTSDIR}/${SUBJ}/PTF_Tracking/sub-${SUBJ}__pft_tracking_prob_wm_seed_0
 	find ${OUTSDIR}/${SUBJ} -type l -execdir bash -c 'cp --remove-destination "$(readlink "${0}")" "${0}"' {} \;
 fi
 
-# remove working directories if key output exists
-if [ -f ${RESULTS}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
-	rm -rf ${TFWORKDIR}
-	rm -rf ${TFRUNDIR}  # ?
-fi
+# # remove working directories if key output exists
+# if [ -f ${RESULTS}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
+#	rm -rf ${TFWORKDIR}
+#	rm -rf ${TFRUNDIR}  # ?
+# fi
