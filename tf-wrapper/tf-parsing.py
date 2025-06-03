@@ -72,7 +72,6 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
     # anat parsing
     #
 
-
     print("Parsing Anatomical Files...")
     for idx, anat in enumerate(anat_files):
 
@@ -169,7 +168,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         # store phase encoding data
         cpe.append(tmeta['PhaseEncodingDirection'])
 
-        ## store image dimension
+        # store image dimension
         if len(tvol.shape) == 4:
             cnv[idx] = tvol.shape[-1]
         elif len(tvol.shape) == 3:
@@ -177,11 +176,11 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         else:
             raise ValueError('dMRI File: {dmri.filename} is not 3D/4D.')
 
-        ## build paths to bvec / bval data
+        # build paths to bvec / bval data
         tbvec = Path(bids_dir, "sub-" + participant_id, 'ses-' + session_id, 'dwi', dmri.filename.replace('.nii.gz', '.bvec')).joinpath()
         tbval = Path(bids_dir, "sub-" + participant_id, 'ses-' + session_id, 'dwi', dmri.filename.replace('.nii.gz', '.bval')).joinpath()
 
-        ## if bvec / bval data exist
+        # if bvec / bval data exist
         if os.path.exists(tbvec) & os.path.exists(tbval):
             print('BVEC / BVAL data exists for this file')
             cbv[idx] = 1
@@ -189,7 +188,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             print('BVEC / BVAL data does not exist for this file')
             cbv[idx] = 0
 
-        ## append to output (?)
+        # append to output (?)
         cdmri.append(dmri)
 
     print("- "*25)
@@ -203,7 +202,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
 
     # sanity check - maybe redundant
     if len(ucpe) > 2:
-        raise ValueError("More than 2 phase encodings found - nothing can be done.")
+        raise ValueError("More than 2 phase encoding axes found - nothing useful can be done without further filtering.")
 
     # set the phase encoding direction
     if ('i' in ucpe) | ('i-' in ucpe):
@@ -214,14 +213,18 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         print('An unlikely (z) or mixed phase encoding has been selected.')
         phase = 'z'
 
+    print(f"Phase Encoding Argument: {phase}")
+
     # catch all the dmri files
     dmrifs = []
 
-    # pull the full sequences
+    # pull the full sequences - THIS ONLY GRABS DIRECTED FILES - MISSES B0s TO MERGE
     for idx, x in enumerate(cbv):
         if x == 1:
             print(f"File {idx+1}: {dmri_files[idx].filename}")
             dmrifs.append(dmri_files[idx])
+
+    print(f"dmrifs: {dmrifs}")
 
     # if there are more than 2, merge by phase encoding directions
     if len(dmrifs) >= 2:
@@ -339,8 +342,8 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
 
         # determine what sequence will be the weighted / revb0
         if  xxx > yyy:
-            #print(f" -- Selected PE1 ({ucpe[0]}) as FPE.")
-            #print(f" -- -- RPE PE2 ({ucpe[1]}).")
+            # print(f" -- Selected PE1 ({ucpe[0]}) as FPE.")
+            # print(f" -- -- RPE PE2 ({ucpe[1]}).")
             dwis_out = pe1img
             dwis_aff = pe1affine
             bval_out = pe1bva
@@ -388,6 +391,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             nib.save(rpe_data, Path(outdir, rpe_out).joinpath())
         else:
             print(f" -- RPE Image isn't really there - don't write it.")
+
     else:
 
         print("Just copy single dwi file to output folder.")
@@ -396,7 +400,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         shutil.copy(Path(bids_dir, "sub-" + participant_id, 'ses-' + session_id, 'dwi', dmrifs[0].filename.replace('.nii.gz', '.bval')).joinpath(), Path(outdir, "bval"))
         rpe_out = None
 
-    ## return the paths to the input files to copy
+    # return the paths to the input files to copy
     # return(dmrifile, bvalfile, bvecfile, anatfile, rpe_file, phase, readout)
     return("Parsing complete.")
 

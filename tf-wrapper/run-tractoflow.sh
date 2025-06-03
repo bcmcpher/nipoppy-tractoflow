@@ -74,7 +74,7 @@ if [ ! -d ${TFINRUN} ]; then
 
 else
 
-	echo " -- TF input directory already exists -- "
+	echo " -- TF input directory already exists"
 
 fi
 
@@ -101,14 +101,12 @@ fi
 source ${TFENVFILE}
 
 if [ ! -f ${TFENVFILE} ]; then
-	echo "Params file not found."
+	echo "Params file not found. TractoFlow will not run correctly."
 	exit 1
 fi
 
 # change into input directory to manage nextflow logs
 cd ${TFRUNDIR}
-
-echo ${TFBVAL}
 
 # run nextflow
 {  # try
@@ -136,8 +134,8 @@ if [ -f ${OUTSDIR}/${SUBJ}/PTF_Tracking/sub-${SUBJ}__pft_tracking_prob_wm_seed_0
 	find ${OUTSDIR}/${SUBJ} -type l -execdir bash -c 'cp --remove-destination "$(readlink "${0}")" "${0}"' {} \;
 fi
 
-# # remove working directories if key output exists
-# if [ -f ${RESULTS}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
-#	rm -rf ${TFWORKDIR}
-#	rm -rf ${TFRUNDIR}  # ?
-# fi
+# remove working directories if key output exists
+if [ -f ${OUTSDIR}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
+	rm -rf ${TFWORKDIR}
+	rm -rf ${TFRUNDIR}  # ?
+fi

@@ -30,6 +30,7 @@ def checkData(bvalfile, bvecfile):
     else:
         sh_order = "8"
 
+    print('-'*80)
     print(f'The largest supported lmax using the whole dMRI sequence is: {dlmax}')
     print(f' -- Fitting lmax: {sh_order}')
 
@@ -65,6 +66,7 @@ if __name__ == '__main__':
     # print vars from environment for sanity
     print(f"Shells   : {os.environ['TFBVAL']}")
     print(f"SH Order : {os.environ['TFORDR']}")
+    print('-'*80)
 
     with open(out_file, 'a') as env_file:
         env_file.write(f'export TFBVAL="{tfbval}"\n')
