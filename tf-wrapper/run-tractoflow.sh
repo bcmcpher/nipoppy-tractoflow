@@ -79,18 +79,15 @@ else
 fi
 
 # if the environment variables are not already determined
-if [ -z ${TFENVFILE} ]; then
+if [ ! -f ${TFENVFILE} ]; then
 
 	# create environment variables in a file
 	python /opt/tf-wrapper/tf-shells.py \
 		   --bval ${TFINRUN}/bval \
 		   --bvec ${TFINRUN}/bvec \
 		   --outs ${TFENVFILE}  # this isn't getting made...?
-
 else
-
-		echo " -- Input data bvals / shells already determined -- "
-
+		echo " -- Input data bvals / shells already determined."
 fi
 
 # deal with working directory being present or not
@@ -102,6 +99,11 @@ fi
 
 # get the environment variables from the file
 source ${TFENVFILE}
+
+if [ ! -f ${TFENVFILE} ]; then
+	echo "Params file not found."
+	exit 1
+fi
 
 # change into input directory to manage nextflow logs
 cd ${TFRUNDIR}
