@@ -61,12 +61,11 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         anat_files = layout.get(extension='.nii.gz', **bidf['t1w'])
         dmri_files = layout.get(extension='.nii.gz', **bidf['dwi'])
     else:
-        anat_files = layout.get(suffix='T1w', extension='.nii.gz')
-        dmri_files = layout.get(suffix='dwi', extension='.nii.gz')
+        anat_files = layout.get(suffix='T1w', session=session_id, extension='.nii.gz')
+        dmri_files = layout.get(suffix='dwi', session=session_id, extension='.nii.gz')
 
     # preallocate candidate anatomical files
     canat = []
-
 
     #
     # anat parsing
