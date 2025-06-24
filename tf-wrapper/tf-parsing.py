@@ -133,6 +133,8 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
     # verify selection in log
     print(f"Selected anat file: {oanat.filename}")
     shutil.copyfile(Path(anat_path, oanat.filename), Path(outdir, "t1.nii.gz"))
+    os.chmod(Path(outdir, "t1.nii.gz"), 0o644)  # set file permissions to +x
+
     print("= "*25)
 
 
@@ -227,7 +229,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
     print(f"dmrifs: {dmrifs}")
 
     # if there are more than 2, merge by phase encoding directions
-    if len(dmrifs) >= 2:
+    if len(dmri_files) >= 2:
 
         print("Multiple files found: attempt to merge files by phase encoding direction.")
         print("= "*25)
@@ -377,7 +379,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         # write the dwi / revb0 to disk
         print("Writing output files...")
 
-        dwi_out = f'dwi.nii.gz'
+        dwi_out = 'dwi.nii.gz'
         dwi_data = nib.nifti1.Nifti1Image(dwis_out, dwis_aff)
         nib.save(dwi_data, Path(outdir, dwi_out).joinpath())
 
@@ -390,7 +392,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             rpe_data = nib.nifti1.Nifti1Image(revb_out, revb_aff)
             nib.save(rpe_data, Path(outdir, rpe_out).joinpath())
         else:
-            print(f" -- RPE Image isn't really there - don't write it.")
+            print(" -- RPE Image isn't really there - don't write it.")
 
     else:
 

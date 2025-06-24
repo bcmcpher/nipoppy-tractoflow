@@ -14,7 +14,7 @@ TFRUNDIR=${TFINDIR}/sub-${SUBJ}_ses-${SESS}
 INPUTDIR=${TFINDIR}/sub-${SUBJ}_ses-${SESS}/input
 TFINRUN=${INPUTDIR}/${SUBJ}
 TFENVFILE=${TFINDIR}/sub-${SUBJ}_ses-${SESS}_env.txt
-TFWORKDIR=${WORKDIR}/sub-${SUBJ}_ses-${SESS}
+# TFWORKDIR=${WORKDIR}/sub-${SUBJ}_ses-${SESS}
 
 # add help message when no arguments are provided
 if [ "$#" -lt 6 ]; then
@@ -61,7 +61,7 @@ if [ ! -d $WORKDIR ]; then
 	exit 1
 fi
 
-# if the input directory is functionally empty
+# if the input directory is empty
 if [ ! -d ${TFINRUN} ]; then
 
 	# create the input directory
@@ -91,10 +91,10 @@ else
 fi
 
 # deal with working directory being present or not
-if [ -d ${TFWORKDIR} ]; then
+if [ -d ${WORKDIR} ]; then
 	echo " -- Working directory already exists. Process should resume."
 else
-	mkdir -p ${TFWORKDIR}
+	mkdir -p ${WORKDIR}
 fi
 
 # get the environment variables from the file
@@ -113,7 +113,7 @@ cd ${TFRUNDIR}
 /usr/bin/nextflow /scilus_flows/tractoflow/main.nf \
 		  --input ${INPUTDIR} \
 		  --output_dir ${OUTSDIR} \
-		  -w ${TFWORKDIR} \
+		  -w ${WORKDIR} \
 		  --run-gibbs-correction true \
 		  --dti_shells "${TFBVAL}" \
 		  --fodf_shells "${TFBVAL}" \
@@ -125,7 +125,7 @@ cd ${TFRUNDIR}
 		  --processes 4 \
 		  -resume
 } || {  # catch
-	echo "Nextflow run failed."
+	echo "Nextflow invocation failed."
 	exit 1
 }
 
@@ -134,8 +134,8 @@ if [ -f ${OUTSDIR}/${SUBJ}/PTF_Tracking/sub-${SUBJ}__pft_tracking_prob_wm_seed_0
 	find ${OUTSDIR}/${SUBJ} -type l -execdir bash -c 'cp --remove-destination "$(readlink "${0}")" "${0}"' {} \;
 fi
 
-# remove working directories if key output exists
-if [ -f ${OUTSDIR}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
-	rm -rf ${TFWORKDIR}
-	rm -rf ${TFRUNDIR}  # ?
-fi
+# # remove working directories if key output exists
+# if [ -f ${OUTSDIR}/${SUBJ}/DTI_Metrics/sub-${SUBJ}__tensor.nii.gz ]; then
+#	rm -rf ${TFWORKDIR}
+#	rm -rf ${TFRUNDIR}  # ?
+# fi
