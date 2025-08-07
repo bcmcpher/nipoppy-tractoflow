@@ -247,7 +247,7 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             t1dwif = x.get_image()
             t1dwid = t1dwif.get_fdata()
             pe1affine = t1dwif.affine
-            pe1eadout = x.get_metadata()["TotalReadoutTime"]
+            pe1readout = x.get_metadata()["TotalReadoutTime"]
             print(f" -- Image file: {x.filename}")
             print(f" -- Image shape: {t1dwid.shape[:3]}")
             print(" -- # of volumes / bvals / bvecs:")
