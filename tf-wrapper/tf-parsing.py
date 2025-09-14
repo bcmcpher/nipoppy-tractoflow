@@ -294,9 +294,16 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             print(f" -- Image shape: {t2dwid.shape[:3]}")
             print(" -- # of volumes / bvals / bvecs:")
 
-            # load bval / bvec data
-            t2bvals = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bval')).joinpath())
-            t2bvecs = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bvec')).joinpath())
+            # load bval / bvec data | try and load, if not there can only assume 0s
+            try:
+                t2bvals = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bval')).joinpath())
+            except:
+                t2bvals = np.zeros(t2dwif.shape[-1])
+
+            try:
+                t2bvecs = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bvec')).joinpath())
+            except:
+                t2bvecs = np.zeros((t2dwif.shape[-1], 3))
             print(f" -- {t2dwid.shape[-1]} / {t2bvals.shape[-1]} / {t2bvecs.shape[-1]}")
             print("- " * 25)
 
@@ -306,10 +313,15 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             pe2date.append(t2bvecs)
 
             # check dims and merge: .nii.gz, bval, bvec
-            pe2img = np.concatenate(pe2dati, axis=-1)
-            pe2bva = np.concatenate(pe2data, axis=-1)
-            pe2bve = np.concatenate(pe2date, axis=-1)
-
+            try:
+                pe2img = np.concatenate(pe2dati, axis=-1)
+                pe2bva = np.concatenate(pe2data, axis=-1)
+                pe2bve = np.concatenate(pe2date, axis=-1)
+            except:
+                pe2dati.pop()
+                pe2data.pop()
+                pe2date.pop()
+                
             print(f"pe2img shape: {pe2img.shape}")
 
             # deal w/ an rpe being non-existant
