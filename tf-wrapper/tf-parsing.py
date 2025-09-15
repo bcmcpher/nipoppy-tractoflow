@@ -158,16 +158,19 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         try:
             tpedir = tmeta['PhaseEncodingDirection']
         except:
-            raise ValueError("INCOMPLETE SIDECAR: ['PhaseEncodingDirection'] is not defined in sidecar. This is required to accurately parse the dMRI data.")
+            tpedir = tmeta['PhaseEncodingAxis']
+
+        if not tpedir:
+            raise ValueError("INCOMPLETE SIDECAR: ['PhaseEncodingDirection'] or ['PhaseEncodingAxis'] is not defined in sidecar. This is required to accurately parse the dMRI data.")
 
         # print for log
         print("- "*25)
         print(dmri.filename)
-        print(f"Encoding Direction: {tmeta['PhaseEncodingDirection']}")
+        print(f"Encoding Direction: {tpedir}")
         print(f"Data Shape: {tvol.shape}")
 
         # store phase encoding data
-        cpe.append(tmeta['PhaseEncodingDirection'])
+        cpe.append(tpedir)
 
         # store image dimension
         if len(tvol.shape) == 4:
@@ -253,8 +256,15 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             print(" -- # of volumes / bvals / bvecs:")
 
             # load bval / bvec data
-            t1bvals = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bval')).joinpath())
-            t1bvecs = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bvec')).joinpath())
+            try:
+                t1bvals = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bval')).joinpath())
+            except:
+                t1bvals = np.zeros(t1dwif.shape[-1])
+
+            try:
+                t1bvecs = np.loadtxt(Path(bids_dir, 'sub-' + participant_id, 'ses-' + session_id, 'dwi', x.filename.replace('.nii.gz', '.bvec')).joinpath())
+            except:
+                t1bvecs = np.zeros((t1dwif.shape[-1], 3))
             print(f" -- {t1dwid.shape[-1]} / {t1bvals.shape[-1]} / {t1bvecs.shape[-1]}")
             print("- " * 25)
 
@@ -264,9 +274,14 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             pe1date.append(t1bvecs)
 
             # check dims and merge: .nii.gz, bval, bvec
-            pe1img = np.concatenate(pe1dati, axis=-1)
-            pe1bva = np.concatenate(pe1data, axis=-1)
-            pe1bve = np.concatenate(pe1date, axis=-1)
+            try:
+                pe1img = np.concatenate(pe1dati, axis=-1)
+                pe1bva = np.concatenate(pe1data, axis=-1)
+                pe1bve = np.concatenate(pe1date, axis=-1)
+            except:
+                pe1dati.pop()
+                pe1data.pop()
+                pe1date.pop()
 
             print(f"pe1img shape: {pe1img.shape}")
 
@@ -349,7 +364,6 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
             yyy = pe2bve[:, pe2bva > 0].shape[1]
         except:
             yyy = 0
-
 
         # print(f"xxx: {xxx} | yyy: {yyy}")
 
