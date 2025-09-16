@@ -6,6 +6,7 @@ import json
 import subprocess
 import tempfile
 import re
+import warnings
 
 import numpy as np
 import nibabel as nib
@@ -136,11 +137,9 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
 
     print("= "*25)
 
-
     #
     # dmri parsing
     #
-
 
     # preallocate candidate dmri inputs
     cdmri = []
@@ -154,12 +153,32 @@ def parse_data(bids_dir, participant_id, session_id, outdir, use_bids_filter=Tru
         tmeta = dmri.get_metadata()
         tvol = dmri.get_image()
 
-        # if no phase encoding present, assume borked
+        # check sidecars for 1 of 2 possible names
         try:
-            tpedir = tmeta['PhaseEncodingDirection']
+            tpedir = tmeta.get('PhaseEncodingDirection')
         except:
-            tpedir = tmeta['PhaseEncodingAxis']
+            tpedir = tmeta.get('PhaseEncodingAxis')
 
+        # if it's not in the sidecar, try and pull it from the file name
+        if not tpedir:
+            try:
+                warnings.warn("Incomplete sidecar: Inferring 'PhaseEncodingDirection' from filename.")
+                epedir = dmri.get_entities().get('direction')
+                if epedir.lower() == "ap":
+                    tpedir = 'j'
+                elif epedir.lower() == "pa":
+                    tpedir = 'j-'
+                elif epedir.lower() == "lr":
+                    tpedir = 'i'
+                elif epedir.lower() == "rl":
+                    tpedir = 'i-'
+                else:
+                    tpedir = None
+                
+            except:
+                tpedir = None
+
+        # if no phase encoding present, assume borked
         if not tpedir:
             raise ValueError("INCOMPLETE SIDECAR: ['PhaseEncodingDirection'] or ['PhaseEncodingAxis'] is not defined in sidecar. This is required to accurately parse the dMRI data.")
 
